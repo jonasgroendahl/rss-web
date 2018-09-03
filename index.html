@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,400,900" rel="stylesheet">
+    <title>Document</title>
+
+    <script src="http://cdn.date-fns.org/v1.8.0/date_fns.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        let index = 0;
+        let queryParams = new URLSearchParams(window.location.search);
+        console.log(window.location, queryParams.has('rss'));
+        let feed = queryParams.has('rss') ? queryParams.get('rss') : 'dr';
+        console.log("query param", feed);
+        axios.get(`https://api-wexer.herokuapp.com/v2/rss/${feed}`).then(res => {
+            rssFeed(res.data);
+            setInterval(() => {
+                if (index !== res.data.length - 1) {
+                    index++;
+                }
+                else {
+                    index = 0;
+                }
+                rssFeed(res.data);
+            }, 10000);
+        });
+
+        function rssFeed(data) {
+            const item = data[index];
+            const wrapper = document.querySelector(".flex");
+            wrapper.style.opacity = 0;
+            setTimeout(() => {
+                console.log("item", item);
+                wrapper.style.opacity = 1;
+                const h1 = document.querySelector("h1");
+                const img = document.querySelector("img");
+                const body = document.querySelector(".body");
+                const p = document.querySelector(".date");
+                const author = document.querySelector(".author");
+                if (item) {
+                    h1.innerHTML = item.title;
+                    img.src = item.img;
+                    body.innerHTML = item.description;
+                    console.log(item.date);
+                    p.innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD/MM/YYYY kl. HH:mm');
+                    console.log(p.innerHTML);
+                    author.innerHTML = item.author;
+                }
+                console.log(index);
+            }, 1000);
+
+        }
+    </script>
+</head>
+
+<body>
+    <div class="flex">
+        <h1></h1>
+        <img class="big" height=600 />
+        <div class="body"></div>
+        <p class="date"></p>
+        <p class="author"></p>
+    </div>
+    <style>
+        .flex {
+            display: flex;
+            min-height: 90vh;
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            flex-flow: column wrap;
+            transition: all 1s ease-in;
+            opacity: 0;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .big {
+            margin-top: 0px;
+        }
+
+        h1 {
+            margin-top: 0px;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 400;
+            color: floralwhite;
+            background-color: rgb(44, 44, 44);
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .date {
+            font-size: 16px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 400;
+        }
+
+        body {
+            font-size: 22px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 400;
+            margin: 10px;
+            padding: 0;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</body>
+
+</html>
