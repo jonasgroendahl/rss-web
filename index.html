@@ -34,23 +34,22 @@
             const wrapper = document.querySelector(".flex");
             wrapper.style.opacity = 0;
             setTimeout(() => {
-                console.log("item", item);
                 wrapper.style.opacity = 1;
                 const h1 = document.querySelector("h1");
                 const img = document.querySelector("img");
                 const body = document.querySelector(".body");
                 const p = document.querySelector(".date");
                 const author = document.querySelector(".author");
+                const description = item.description[0] ? item.description : item.description;
+                const formattedDescrip = description
+                    .map(i => `<p>${i ? i.trim() : ''}</p>`);
                 if (item) {
                     h1.innerHTML = item.title;
                     img.src = item.img;
-                    body.innerHTML = item.description;
-                    console.log(item.date);
+                    body.innerHTML = formattedDescrip.join('');
                     p.innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD/MM/YYYY kl. HH:mm');
-                    console.log(p.innerHTML);
                     author.innerHTML = item.author;
                 }
-                console.log(index);
             }, 1000);
 
         }
