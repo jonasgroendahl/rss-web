@@ -36,7 +36,8 @@
             setTimeout(() => {
                 wrapper.style.opacity = 1;
                 const h1 = document.querySelector("h1");
-                const img = document.querySelector("img");
+                const logo = document.querySelector(".logo");
+                const img = document.querySelector(".big");
                 const body = document.querySelector(".body");
                 const p = document.querySelector(".date");
                 const author = document.querySelector(".author");
@@ -46,6 +47,9 @@
                 if (item) {
                     h1.innerHTML = item.title;
                     img.src = item.img;
+                    if (item.author == 'DR') {
+                        logo.src = 'http://www.nfoo.com/drlogo.png';
+                    }
                     body.innerHTML = formattedDescrip.join('');
                     p.innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD/MM/YYYY kl. HH:mm');
                     author.innerHTML = item.author;
@@ -58,15 +62,24 @@
 
 <body>
     <div class="flex">
+        <div class="logo-wrapper">
+         <img class="logo" />
+        </div>
         <h1></h1>
-        <img class="big" height=600 />
+        <img class="big" height=500 />
         <div class="body"></div>
         <p class="date"></p>
         <p class="author"></p>
     </div>
     <style>
+
+        @media(max-width: 1280px){
+            .big{
+                height: 300px;
+            }
+        }
+
         .flex {
-            display: flex;
             min-height: 90vh;
             justify-content: flex-start;
             align-items: flex-start;
@@ -80,10 +93,18 @@
 
         .big {
             margin-top: 0px;
+            float:left;
+            margin-right:20px;
+        }
+
+        .logo-wrapper{
+            width:100%;
+            display:flex;
+            justify-content:flex-end;
         }
 
         h1 {
-            margin-top: 0px;
+            margin-top: 10px;
             margin-bottom: 10px;
             font-size: 32px;
             font-family: 'Raleway', sans-serif;
