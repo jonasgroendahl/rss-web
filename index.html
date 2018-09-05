@@ -10,15 +10,17 @@
 
     <script src="http://cdn.date-fns.org/v1.8.0/date_fns.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <script src="urlsearchparams.js"></script>
     <script>
         let index = 0;
         let queryParams = new URLSearchParams(window.location.search);
         console.log(window.location, queryParams.has('rss'));
         let feed = queryParams.has('rss') ? queryParams.get('rss') : 'dr';
         console.log("query param", feed);
-        axios.get(`https://api-wexer.herokuapp.com/v2/rss/${feed}`).then(res => {
+        axios.get("https://api-wexer.herokuapp.com/v2/rss/" + feed).then(function (res) {
             rssFeed(res.data);
-            setInterval(() => {
+            setInterval(function () {
                 if (index !== res.data.length - 1) {
                     index++;
                 }
@@ -33,7 +35,7 @@
             const item = data[index];
             const wrapper = document.querySelector(".flex");
             wrapper.style.opacity = 0;
-            setTimeout(() => {
+            setTimeout(function () {
                 wrapper.style.opacity = 1;
                 const h1 = document.querySelector("h1");
                 const logo = document.querySelector(".logo");
@@ -42,8 +44,10 @@
                 const p = document.querySelector(".date");
                 const author = document.querySelector(".author");
                 const description = item.description[0] ? item.description : item.description;
-                const formattedDescrip = description
-                    .map(i => `<p>${i ? i.trim() : ''}</p>`);
+                const formattedDescrip = description.map(function (i) {
+                    const name = i ? i.trim() : '';
+                    return "<p>" + name + "</p>";
+                });
                 if (item) {
                     h1.innerHTML = item.title;
                     img.src = item.img;
@@ -63,7 +67,7 @@
 <body>
     <div class="flex">
         <div class="logo-wrapper">
-         <img class="logo" />
+            <img class="logo" />
         </div>
         <h1></h1>
         <img class="big" height=500 />
@@ -72,9 +76,8 @@
         <p class="author"></p>
     </div>
     <style>
-
-        @media(max-width: 1280px){
-            .big{
+        @media(max-width: 1280px) {
+            .big {
                 height: 300px;
             }
         }
@@ -93,14 +96,14 @@
 
         .big {
             margin-top: 0px;
-            float:left;
-            margin-right:20px;
+            float: left;
+            margin-right: 20px;
         }
 
-        .logo-wrapper{
-            width:100%;
-            display:flex;
-            justify-content:flex-end;
+        .logo-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
         }
 
         h1 {
