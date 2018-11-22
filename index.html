@@ -18,7 +18,7 @@
         let feed = queryParams.has('rss') ? queryParams.get('rss') : 'tv2';
         console.log("query param", feed);
 
-        axios.get("http://localhost:3001/v2/rss/" + feed).then(function (res) {
+        axios.get("https://api-wexer.herokuapp.com/v2/rss/" + feed).then(function (res) {
             console.log(res);
             rssFeed(res.data);
             setInterval(function () {
