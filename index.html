@@ -8,17 +8,18 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,400,900" rel="stylesheet">
     <title>RSS!!</title>
 
-    <script src="http://cdn.date-fns.org/v1.8.0/date_fns.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.29.0/date_fns.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
     <script src="urlsearchparams.js"></script>
     <script>
         let index = 0;
         let queryParams = new URLSearchParams(window.location.search);
-        console.log(window.location, queryParams.has('rss'));
-        let feed = queryParams.has('rss') ? queryParams.get('rss') : 'dr';
+        let feed = queryParams.has('rss') ? queryParams.get('rss') : 'tv2';
         console.log("query param", feed);
-        axios.get("https://api-wexer.herokuapp.com/v2/rss/" + feed).then(function (res) {
+
+        axios.get("http://localhost:3001/v2/rss/" + feed).then(function (res) {
+            console.log(res);
             rssFeed(res.data);
             setInterval(function () {
                 if (index !== res.data.length - 1) {
@@ -51,9 +52,7 @@
                 if (item) {
                     h1.innerHTML = item.title;
                     img.src = item.img;
-                    if (item.author == 'DR') {
-                        logo.src = 'http://www.nfoo.com/drlogo.png';
-                    }
+                    logo.src = 'https://seeklogo.com/images/T/TV2-logo-8164CC5B5C-seeklogo.com.png';
                     body.innerHTML = formattedDescrip.join('');
                     p.innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD/MM/YYYY kl. HH:mm');
                     author.innerHTML = item.author;
@@ -70,10 +69,16 @@
             <img class="logo" />
         </div>
         <h1></h1>
-        <img class="big" height=500 />
-        <div class="body"></div>
-        <p class="date"></p>
-        <p class="author"></p>
+        <div class="container">
+            <img class="big" height=500 />
+            <div class="container-right">
+                <div class="body"></div>
+                <div>
+                    <p class="date"></p>
+                    <p class="author"></p>
+                </div>
+            </div>
+        </div>
     </div>
     <style>
         @media(max-width: 1280px) {
@@ -104,6 +109,15 @@
             width: 100%;
             display: flex;
             justify-content: flex-end;
+        }
+
+        .container {
+            height: 500px;
+        }
+
+        .container-right {
+            display: flex;
+            flex-flow: wrap column;
         }
 
         h1 {
@@ -137,6 +151,7 @@
             0% {
                 opacity: 0;
             }
+
             100% {
                 opacity: 1;
             }
