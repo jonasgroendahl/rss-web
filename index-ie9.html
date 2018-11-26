@@ -41,23 +41,25 @@
                 date.innerHTML = dateFns.format(new Date(), 'DD. MMMM YYYY');
 
                 setInterval(function () {
-                    if (index !== res.data.length - 1) {
+                    if (index !== res.length - 1) {
                         index++;
                     }
                     else {
                         index = 0;
                     }
-                    rssFeed(res.data);
-                }, 30000);
+                    rssFeed(res);
+                }, 5000);
             }
 
             function rssFeed(data) {
                 var item = data[index];
                 var wrapper = document.querySelector(".flex");
                 console.log(wrapper);
-                wrapper.style.opacity = 0;
+                // $(".flex").fadeOut();
+                //wrapper.style.opacity = 0;
+                $(".flex").fadeOut('slow');
                 setTimeout(function () {
-                    wrapper.style.opacity = 1;
+                    $(".flex").fadeIn('slow');
                     var h1 = document.querySelector("h5");
                     var logo = document.querySelector(".logo");
                     var img = document.querySelector(".big");
@@ -97,7 +99,8 @@
         <div class="container">
             <img class="big" height=500 />
             <div class="container-right">
-                <div class="divider"></div>
+                <hr class="divider">
+                </hr>
                 <h5></h5>
                 <div class="body"></div>
                 <div>
@@ -106,8 +109,8 @@
             </div>
         </div>
         <footer class="footer">
-            <div></div>
-            <div style="margin-left:auto"></div>
+            <div style="float:left"></div>
+            <div style="margin-left:auto;float:right"></div>
 
         </footer>
     </div>
@@ -130,12 +133,14 @@
             display: flex;
             align-items: center;
             box-sizing: border-box;
+            padding-top: 25px;
         }
 
         .divider {
             background-color: rgb(59, 150, 143);
             height: 20px;
-            width: 100%;
+            border: none;
+            margin-top: 0;
         }
 
         .flex {
@@ -145,7 +150,6 @@
             text-align: left;
             flex-flow: column wrap;
             transition: all 1s ease-in;
-            opacity: 0;
             margin: 0px;
             padding: 0px;
         }
@@ -163,6 +167,7 @@
             background-image: url("./Pattern.jpg");
             background-size: cover;
             flex-direction: column;
+            text-align: right;
         }
 
         .logo-wrapper img {
@@ -175,6 +180,9 @@
             color: white;
             width: fit-content;
             padding: 10px 20px;
+            width: 200px;
+            position: absolute;
+            right: 0;
         }
 
         .nested-wrapper {
@@ -182,6 +190,7 @@
             width: 100%;
             display: flex;
             justify-content: flex-end;
+            height: 46px;
         }
 
         .container {
