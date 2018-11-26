@@ -21,6 +21,10 @@
         axios.get("https://api-wexer.herokuapp.com/v2/rss/" + feed).then(function (res) {
             console.log(res);
             rssFeed(res.data);
+
+            const date = document.querySelector(".date");
+            date.innerHTML = dateFns.format(new Date(), 'DD. MMMM YYYY');
+
             setInterval(function () {
                 if (index !== res.data.length - 1) {
                     index++;
@@ -38,13 +42,15 @@
             wrapper.style.opacity = 0;
             setTimeout(function () {
                 wrapper.style.opacity = 1;
-                const h1 = document.querySelector("h1");
+                const h1 = document.querySelector("h5");
                 const logo = document.querySelector(".logo");
                 const img = document.querySelector(".big");
                 const body = document.querySelector(".body");
                 const p = document.querySelector(".date");
                 const author = document.querySelector(".author");
                 const description = item.description[0] ? item.description : item.description;
+                const footer = document.querySelector("footer");
+
                 const formattedDescrip = description.map(function (i) {
                     const name = i ? i.trim() : '';
                     return "<p>" + name + "</p>";
@@ -52,10 +58,10 @@
                 if (item) {
                     h1.innerHTML = item.title;
                     img.src = item.img;
-                    logo.src = 'https://seeklogo.com/images/T/TV2-logo-8164CC5B5C-seeklogo.com.png';
+                    logo.src = './Logo.png';
                     body.innerHTML = formattedDescrip.join('');
-                    p.innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD/MM/YYYY kl. HH:mm');
-                    author.innerHTML = item.author;
+                    footer.querySelector("div:nth-child(1)").innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD.MM.YYYY kl. HH:mm');
+                    footer.querySelector("div:nth-child(2)").innerHTML = 'Kilde: ' + item.author;
                 }
             }, 1000);
 
@@ -67,24 +73,53 @@
     <div class="flex">
         <div class="logo-wrapper">
             <img class="logo" />
+            <div class="nested-wrapper">
+                <div class="date">Test date</div>
+            </div>
         </div>
-        <h1></h1>
         <div class="container">
             <img class="big" height=500 />
             <div class="container-right">
+                <div class="divider" />
+                <h5></h5>
                 <div class="body"></div>
                 <div>
-                    <p class="date"></p>
                     <p class="author"></p>
                 </div>
             </div>
         </div>
+        <footer class="footer">
+            <div></div>
+            <div style="margin-left:auto"></div>
+
+        </footer>
     </div>
     <style>
         @media(max-width: 1280px) {
             .big {
                 height: 300px;
             }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #575757;
+            height: 80px;
+            color: #b9b9b9;
+            padding: 0px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .divider {
+            background-color: rgb(59, 150, 143);
+            height: 20px;
+            width: 100%;
         }
 
         .flex {
@@ -108,11 +143,34 @@
         .logo-wrapper {
             width: 100%;
             display: flex;
+            align-items: flex-end;
+            background-image: url("./Pattern.jpg");
+            background-size: cover;
+            flex-direction: column;
+        }
+
+        .logo-wrapper img {
+            padding: 20px;
+        }
+
+        .date {
+            background: rgb(224, 94, 0);
+            padding: 0 20px;
+            color: white;
+            width: fit-content;
+            padding: 10px 20px;
+        }
+
+        .nested-wrapper {
+            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            display: flex;
             justify-content: flex-end;
         }
 
         .container {
             height: 500px;
+            margin-top: 40px;
         }
 
         .container-right {
@@ -120,30 +178,17 @@
             flex-flow: wrap column;
         }
 
-        h1 {
-            margin-top: 10px;
+        h5 {
             margin-bottom: 10px;
-            font-size: 32px;
-            font-family: 'Raleway', sans-serif;
-            font-weight: 400;
-            color: floralwhite;
-            background-color: rgb(44, 44, 44);
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
+            font-size: 26px;
         }
 
-        .date {
-            font-size: 16px;
-            font-family: 'Raleway', sans-serif;
-            font-weight: 400;
-        }
 
         body {
             font-size: 22px;
             font-family: 'Raleway', sans-serif;
             font-weight: 400;
-            margin: 10px;
+            margin: 0;
             padding: 0;
         }
 
