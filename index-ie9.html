@@ -17,18 +17,20 @@
         var index = 0;
         $(document).ready(function () {
 
-            $.support.cors = true;
-
             $.ajax({
                 url: 'https://api-wexer.herokuapp.com/v2/rss/tv2',
                 type: 'get',
-                crossDomain: true,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
                 success: function (res) {
                     console.log('Success');
                     doSomething(res);
                 },
                 error: function (e) {
                     console.log('Error', e);
+                },
+                done: function (s) {
+                    console.log('slet');
                 }
             })
 
