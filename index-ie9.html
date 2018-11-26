@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,400,900" rel="stylesheet">
+    <title>RSS!!</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.29.0/date_fns.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script>
+        var index = 0;
+
+        $.support.cors = true
+
+        $(document).ready(function () {
+
+            $.ajax({
+                url: 'http://api-wexer.herokuapp.com/v2/rss/tv2',
+                type: 'get',
+                success: function (res) {
+                    doSomething(res);
+                },
+                error: function (e) {
+                    console.log('Error', e);
+                }
+            })
+
+            function doSomething(res) {
+
+                console.log(res);
+
+                rssFeed(res);
+
+                var date = document.querySelector(".date");
+                date.innerHTML = dateFns.format(new Date(), 'DD. MMMM YYYY');
+
+                setInterval(function () {
+                    if (index !== res.data.length - 1) {
+                        index++;
+                    }
+                    else {
+                        index = 0;
+                    }
+                    rssFeed(res.data);
+                }, 30000);
+            }
+
+            function rssFeed(data) {
+                var item = data[index];
+                var wrapper = document.querySelector(".flex");
+                console.log(wrapper);
+                wrapper.style.opacity = 0;
+                setTimeout(function () {
+                    wrapper.style.opacity = 1;
+                    var h1 = document.querySelector("h5");
+                    var logo = document.querySelector(".logo");
+                    var img = document.querySelector(".big");
+                    var body = document.querySelector(".body");
+                    var p = document.querySelector(".date");
+                    var author = document.querySelector(".author");
+                    var description = item.description[0] ? item.description : item.description;
+                    var footer = document.querySelector("footer");
+
+                    var formattedDescrip = description.map(function (i) {
+                        var name = i ? i.trim() : '';
+                        return "<p>" + name + "</p>";
+                    });
+                    if (item) {
+                        h1.innerHTML = item.title;
+                        img.src = item.img;
+                        logo.src = './Logo.png';
+                        body.innerHTML = formattedDescrip.join('');
+                        footer.querySelector("div:nth-child(1)").innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD.MM.YYYY kl. HH:mm');
+                        footer.querySelector("div:nth-child(2)").innerHTML = 'Kilde: ' + item.author;
+                    }
+                }, 1000);
+
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <div class="flex">
+        <div class="logo-wrapper">
+            <img class="logo" />
+            <div class="nested-wrapper">
+                <div class="date">Test date</div>
+            </div>
+        </div>
+        <div class="container">
+            <img class="big" height=500 />
+            <div class="container-right">
+                <div class="divider"></div>
+                <h5></h5>
+                <div class="body"></div>
+                <div>
+                    <p class="author"></p>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div></div>
+            <div style="margin-left:auto"></div>
+
+        </footer>
+    </div>
+    <style>
+        @media(max-width: 1366px) {
+            .big {
+                height: 300px;
+            }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #575757;
+            height: 80px;
+            color: #b9b9b9;
+            padding: 0px 20px;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .divider {
+            background-color: rgb(59, 150, 143);
+            height: 20px;
+            width: 100%;
+        }
+
+        .flex {
+            min-height: 90vh;
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            flex-flow: column wrap;
+            transition: all 1s ease-in;
+            opacity: 0;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .big {
+            margin-top: 0px;
+            float: left;
+            margin-right: 20px;
+        }
+
+        .logo-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            background-image: url("./Pattern.jpg");
+            background-size: cover;
+            flex-direction: column;
+        }
+
+        .logo-wrapper img {
+            padding: 20px;
+        }
+
+        .date {
+            background: rgb(224, 94, 0);
+            padding: 0 20px;
+            color: white;
+            width: fit-content;
+            padding: 10px 20px;
+        }
+
+        .nested-wrapper {
+            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .container {
+            height: 500px;
+            padding: 40px;
+        }
+
+        .container-right {
+            display: flex;
+            flex-flow: wrap column;
+        }
+
+        h5 {
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .body {
+            font-size: 28px;
+        }
+
+
+        body {
+            font-size: 22px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</body>
+
+</html>
