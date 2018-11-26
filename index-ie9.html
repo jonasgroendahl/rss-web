@@ -22,6 +22,7 @@
             $.ajax({
                 url: 'https://api-wexer.herokuapp.com/v2/rss/tv2',
                 type: 'get',
+                crossDomain: true,
                 success: function (res) {
                     doSomething(res);
                 },
