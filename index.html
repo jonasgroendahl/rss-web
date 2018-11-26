@@ -11,80 +11,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.29.0/date_fns.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous"></script>
+    <script src="urlsearchparams.js"></script>
     <script>
-        var index = 0;
+        let index = 0;
+        let queryParams = new URLSearchParams(window.location.search);
+        let feed = queryParams.has('rss') ? queryParams.get('rss') : 'tv2';
+        console.log("query param", feed);
 
-        $.support.cors = true
+        axios.get("https://api-wexer.herokuapp.com/v2/rss/" + feed).then(function (res) {
+            console.log(res);
+            rssFeed(res.data);
 
-        $(document).ready(function () {
+            const date = document.querySelector(".date");
+            date.innerHTML = dateFns.format(new Date(), 'DD. MMMM YYYY');
 
-            $.ajax({
-                url: 'https://api-wexer.herokuapp.com/v2/rss/tv2',
-                type: 'get',
-                success: function (res) {
-                    doSomething(res);
-                },
-                error: function (e) {
-                    console.log('Error', e);
+            setInterval(function () {
+                if (index !== res.data.length - 1) {
+                    index++;
                 }
-            })
+                else {
+                    index = 0;
+                }
+                rssFeed(res.data);
+            }, 30000);
+        });
 
-            function doSomething(res) {
+        function rssFeed(data) {
+            const item = data[index];
+            const wrapper = document.querySelector(".flex");
+            wrapper.style.opacity = 0;
+            setTimeout(function () {
+                wrapper.style.opacity = 1;
+                const h1 = document.querySelector("h5");
+                const logo = document.querySelector(".logo");
+                const img = document.querySelector(".big");
+                const body = document.querySelector(".body");
+                const p = document.querySelector(".date");
+                const author = document.querySelector(".author");
+                const description = item.description[0] ? item.description : item.description;
+                const footer = document.querySelector("footer");
 
-                console.log(res);
+                const formattedDescrip = description.map(function (i) {
+                    const name = i ? i.trim() : '';
+                    return "<p>" + name + "</p>";
+                });
+                if (item) {
+                    h1.innerHTML = item.title;
+                    img.src = item.img;
+                    logo.src = './Logo.png';
+                    body.innerHTML = formattedDescrip.join('');
+                    footer.querySelector("div:nth-child(1)").innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD.MM.YYYY kl. HH:mm');
+                    footer.querySelector("div:nth-child(2)").innerHTML = 'Kilde: ' + item.author;
+                }
+            }, 1000);
 
-                rssFeed(res);
-
-                var date = document.querySelector(".date");
-                date.innerHTML = dateFns.format(new Date(), 'DD. MMMM YYYY');
-
-                setInterval(function () {
-                    if (index !== res.length - 1) {
-                        index++;
-                    }
-                    else {
-                        index = 0;
-                    }
-                    rssFeed(res);
-                }, 30000);
-            }
-
-            function rssFeed(data) {
-                var item = data[index];
-                var wrapper = document.querySelector(".flex");
-                console.log(wrapper);
-                // $(".flex").fadeOut();
-                //wrapper.style.opacity = 0;
-                $(".flex").fadeOut('slow');
-                setTimeout(function () {
-                    $(".flex").fadeIn('slow');
-                    var h1 = document.querySelector("h5");
-                    var logo = document.querySelector(".logo");
-                    var img = document.querySelector(".big");
-                    var body = document.querySelector(".body");
-                    var p = document.querySelector(".date");
-                    var author = document.querySelector(".author");
-                    var description = item.description[0] ? item.description : item.description;
-                    var footer = document.querySelector("footer");
-
-                    var formattedDescrip = description.map(function (i) {
-                        var name = i ? i.trim() : '';
-                        return "<p>" + name + "</p>";
-                    });
-                    if (item) {
-                        h1.innerHTML = item.title;
-                        img.src = item.img;
-                        logo.src = './Logo.png';
-                        body.innerHTML = formattedDescrip.join('');
-                        footer.querySelector("div:nth-child(1)").innerHTML = 'Offentliggjort ' + dateFns.format(item.date, 'DD.MM.YYYY kl. HH:mm');
-                        footer.querySelector("div:nth-child(2)").innerHTML = 'Kilde: ' + item.author;
-                    }
-                }, 1000);
-
-            }
-        })
+        }
     </script>
 </head>
 
@@ -99,8 +80,7 @@
         <div class="container">
             <img class="big" height=500 />
             <div class="container-right">
-                <hr class="divider">
-                </hr>
+                <div class="divider" />
                 <h5></h5>
                 <div class="body"></div>
                 <div>
@@ -109,8 +89,8 @@
             </div>
         </div>
         <footer class="footer">
-            <div style="float:left"></div>
-            <div style="margin-left:auto;float:right"></div>
+            <div></div>
+            <div style="margin-left:auto"></div>
 
         </footer>
     </div>
@@ -133,14 +113,12 @@
             display: flex;
             align-items: center;
             box-sizing: border-box;
-            padding-top: 25px;
         }
 
         .divider {
             background-color: rgb(59, 150, 143);
             height: 20px;
-            border: none;
-            margin-top: 0;
+            width: 100%;
         }
 
         .flex {
@@ -150,6 +128,7 @@
             text-align: left;
             flex-flow: column wrap;
             transition: all 1s ease-in;
+            opacity: 0;
             margin: 0px;
             padding: 0px;
         }
@@ -167,7 +146,6 @@
             background-image: url("./Pattern.jpg");
             background-size: cover;
             flex-direction: column;
-            text-align: right;
         }
 
         .logo-wrapper img {
@@ -180,9 +158,6 @@
             color: white;
             width: fit-content;
             padding: 10px 20px;
-            width: 200px;
-            position: absolute;
-            right: 0;
         }
 
         .nested-wrapper {
@@ -190,7 +165,6 @@
             width: 100%;
             display: flex;
             justify-content: flex-end;
-            height: 46px;
         }
 
         .container {
