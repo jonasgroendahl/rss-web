@@ -12,53 +12,12 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js"></script>
     <script>
         var index = 0;
         $(document).ready(function () {
 
-            $.support.cors = true
-
-            if (window.XDomainRequest) {
-                console.log('XDoaminRequest exists');
-                jQuery.ajaxTransport(function (s) {
-                    if (s.crossDomain && s.async) {
-                        if (s.timeout) {
-                            s.xdrTimeout = s.timeout;
-                            delete s.timeout;
-                        }
-                        var xdr;
-                        return {
-                            send: function (_, complete) {
-                                function callback(status, statusText, responses, responseHeaders) {
-                                    xdr.onload = xdr.onerror = xdr.ontimeout = jQuery.noop;
-                                    xdr = undefined;
-                                    complete(status, statusText, responses, responseHeaders);
-                                }
-                                xdr = new XDomainRequest();
-                                xdr.onload = function () {
-                                    callback(200, "OK", { text: xdr.responseText }, "Content-Type: " + xdr.contentType);
-                                };
-                                xdr.onerror = function () {
-                                    callback(404, "Not Found");
-                                };
-                                xdr.onprogress = jQuery.noop;
-                                xdr.ontimeout = function () {
-                                    callback(0, "timeout");
-                                };
-                                xdr.timeout = s.xdrTimeout || Number.MAX_VALUE;
-                                xdr.open(s.type, s.url);
-                                xdr.send((s.hasContent && s.data) || null);
-                            },
-                            abort: function () {
-                                if (xdr) {
-                                    xdr.onerror = jQuery.noop;
-                                    xdr.abort();
-                                }
-                            }
-                        };
-                    }
-                });
-            }
+            $.support.cors = true;
 
             $.ajax({
                 url: 'https://api-wexer.herokuapp.com/v2/rss/tv2',
